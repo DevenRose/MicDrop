@@ -1,0 +1,9 @@
+# MicDrop is free. Tips are optional and never required.
+# Fill in your handles after creating the accounts, then delete the unused lines.
+# Docs: https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/displaying-a-sponsor-button-in-your-repository
+
+github: [OWNER]                 # GitHub Sponsors username (enables the "Sponsor" button)
+ko_fi: OWNER                    # ko-fi.com/OWNER
+buy_me_a_coffee: OWNER          # buymeacoffee.com/OWNER
+custom:
+  - https://www.paypal.me/OWNER

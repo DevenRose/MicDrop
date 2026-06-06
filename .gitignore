@@ -1,0 +1,8 @@
+# User's own config — keep the example tracked, not the personal copy
+config.json
+
+# Windows / editor cruft
+Thumbs.db
+desktop.ini
+.vs/
+*.tmp
