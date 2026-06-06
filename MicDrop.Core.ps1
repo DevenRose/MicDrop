@@ -55,19 +55,20 @@ function Set-MicDropMic {
 
 function New-MicDropBitmap {
     <#
-      Draws an SM58-style mic ball-grille (sphere + diamond mesh), tinted as a
-      soundboard indicator light, with a power-style glyph:
-        'Mic'    -> GREEN grille, glyph "I"  (mic ON / available)
-        'Stereo' -> RED   grille, glyph "0"  (mic OFF / stereo-locked)
-        other    -> gray  grille             (headset not connected)
+      Draws a big, edge-to-edge SM58-style mic ball-grille with an embossed,
+      3D diamond mesh, tinted as a soundboard indicator light. No glyph — state
+      is conveyed by colour + the tray hover text:
+        'Mic'    -> GREEN  (mic ON / available)
+        'Stereo' -> RED    (mic OFF / stereo-locked)
+        other    -> gray   (headset not connected)
       Returns a System.Drawing.Bitmap (caller converts to Icon / saves as needed).
     #>
     param([string]$State = 'Mic', [int]$Size = 32)
 
     switch ($State) {
-        'Mic'    { $light = [System.Drawing.Color]::FromArgb(175, 255, 150); $dark = [System.Drawing.Color]::FromArgb(20, 130, 38); $glyph = 'I' }
-        'Stereo' { $light = [System.Drawing.Color]::FromArgb(255, 150, 130); $dark = [System.Drawing.Color]::FromArgb(155, 16, 16); $glyph = '0' }
-        default  { $light = [System.Drawing.Color]::FromArgb(205, 205, 205); $dark = [System.Drawing.Color]::FromArgb(95, 95, 95);  $glyph = ''  }
+        'Mic'    { $light = [System.Drawing.Color]::FromArgb(170, 255, 90);  $dark = [System.Drawing.Color]::FromArgb(40, 215, 70)  }
+        'Stereo' { $light = [System.Drawing.Color]::FromArgb(255, 105, 90);  $dark = [System.Drawing.Color]::FromArgb(230, 25, 25)  }
+        default  { $light = [System.Drawing.Color]::FromArgb(240, 240, 240); $dark = [System.Drawing.Color]::FromArgb(150, 150, 150) }
     }
 
     $bmp = New-Object System.Drawing.Bitmap $Size, $Size
@@ -75,61 +76,56 @@ function New-MicDropBitmap {
     $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
     $g.Clear([System.Drawing.Color]::Transparent)
 
-    $m = [int][math]::Round($Size * 0.06)
+    # near edge-to-edge ball
+    $m = [int][math]::Max(1, [math]::Round($Size * 0.03))
     $d = $Size - 2 * $m
     $rect = New-Object System.Drawing.Rectangle $m, $m, $d, $d
-
-    # spherical metallic gradient (highlight offset up-left)
     $path = New-Object System.Drawing.Drawing2D.GraphicsPath
     $path.AddEllipse($rect)
+
+    # spherical base gradient (bright off-centre highlight -> dark edge)
     $pgb = New-Object System.Drawing.Drawing2D.PathGradientBrush($path)
     $pgb.CenterColor = $light
     $pgb.SurroundColors = [System.Drawing.Color[]]@($dark)
-    $pgb.CenterPoint = New-Object System.Drawing.PointF (($m + $d * 0.36), ($m + $d * 0.32))
+    $pgb.CenterPoint = New-Object System.Drawing.PointF (($m + $d * 0.38), ($m + $d * 0.34))
     $g.FillPath($pgb, $path)
 
-    # SM58 grille: diamond cross-hatch mesh, clipped to the ball
+    # embossed 3D grille: dark wires + offset white sheen, clipped to the ball
     $g.SetClip($path)
-    $mesh = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(70, 0, 0, 0)), ([single][math]::Max(1, $Size / 26))
-    $step = [int][math]::Max(3, $Size / 8)
+    $step  = [int][math]::Max(3, [math]::Round($Size / 5))
+    $off   = [single][math]::Max(1, $Size / 26)
+    $wireW = [single][math]::Max(1.5, $Size / 13)
+    $sheenW = [single][math]::Max(1, $Size / 30)
+    $wire  = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(150, 15, 15, 15)), $wireW
+    $sheen = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(120, 255, 255, 255)), $sheenW
     for ($i = -$Size; $i -le ($Size * 2); $i += $step) {
-        $g.DrawLine($mesh, $i, 0, ($i + $Size), $Size)
-        $g.DrawLine($mesh, $i, $Size, ($i + $Size), 0)
+        $g.DrawLine($wire,  $i, 0, ($i + $Size), $Size)
+        $g.DrawLine($sheen, ($i - $off), (0 - $off), (($i + $Size) - $off), ($Size - $off))
+        $g.DrawLine($wire,  $i, $Size, ($i + $Size), 0)
+        $g.DrawLine($sheen, ($i - $off), ($Size - $off), (($i + $Size) - $off), (0 - $off))
     }
-    $g.ResetClip(); $mesh.Dispose()
+    $g.ResetClip(); $wire.Dispose(); $sheen.Dispose()
 
-    # dark rim for definition
-    $rim = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(165, 0, 0, 0)), ([single][math]::Max(1, $Size / 22))
+    # edge vignette to deepen the sphere (only the outer rim darkens)
+    $vig = New-Object System.Drawing.Drawing2D.PathGradientBrush($path)
+    $vig.CenterColor = [System.Drawing.Color]::FromArgb(0, 0, 0, 0)
+    $vig.SurroundColors = [System.Drawing.Color[]]@([System.Drawing.Color]::FromArgb(70, 0, 0, 0))
+    $vig.CenterPoint = New-Object System.Drawing.PointF (($m + $d * 0.5), ($m + $d * 0.5))
+    $vig.FocusScales = New-Object System.Drawing.PointF (0.45, 0.45)
+    $g.FillPath($vig, $path); $vig.Dispose()
+
+    # crisp dark rim
+    $rim = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(195, 0, 0, 0)), ([single][math]::Max(1, $Size / 20))
     $g.DrawEllipse($rim, $rect); $rim.Dispose()
 
-    # gloss highlight (soft white)
-    $gw = [int]($d * 0.42); $gh = [int]($gw * 0.7)
-    $gloss = New-Object System.Drawing.Drawing2D.GraphicsPath
-    $gloss.AddEllipse(($m + [int]($d * 0.17)), ($m + [int]($d * 0.11)), $gw, $gh)
-    $gb = New-Object System.Drawing.Drawing2D.PathGradientBrush($gloss)
-    $gb.CenterColor = [System.Drawing.Color]::FromArgb(140, 255, 255, 255)
-    $gb.SurroundColors = [System.Drawing.Color[]]@([System.Drawing.Color]::FromArgb(0, 255, 255, 255))
-    $g.FillPath($gb, $gloss); $gb.Dispose(); $gloss.Dispose()
-
-    # power-style glyph on top: I (on) / 0 (off), white with a soft dark shadow
-    $cx = $Size / 2.0; $cy = $Size / 2.0
-    if ($glyph -eq 'I') {
-        $bw = [int][math]::Max(2, [math]::Round($Size * 0.12))
-        $bh = [int][math]::Round($d * 0.46)
-        $bx = [int]($cx - $bw / 2.0); $by = [int]($cy - $bh / 2.0)
-        $sh = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(130, 0, 0, 0))
-        $g.FillRectangle($sh, $bx + 1, $by + 1, $bw, $bh); $sh.Dispose()
-        $wh = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(245, 255, 255, 255))
-        $g.FillRectangle($wh, $bx, $by, $bw, $bh); $wh.Dispose()
-    } elseif ($glyph -eq '0') {
-        $ow = [int][math]::Round($d * 0.36); $oh = [int][math]::Round($d * 0.52)
-        $ox = [int]($cx - $ow / 2.0); $oy = [int]($cy - $oh / 2.0)
-        $pw = [single][math]::Max(2, $Size * 0.11)
-        $shp = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(130, 0, 0, 0)), $pw
-        $g.DrawEllipse($shp, $ox + 1, $oy + 1, $ow, $oh); $shp.Dispose()
-        $whp = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(245, 255, 255, 255)), $pw
-        $g.DrawEllipse($whp, $ox, $oy, $ow, $oh); $whp.Dispose()
-    }
+    # bright specular highlight (top-left)
+    $hw = [int]($d * 0.50); $hh = [int]($hw * 0.62)
+    $hl = New-Object System.Drawing.Drawing2D.GraphicsPath
+    $hl.AddEllipse(($m + [int]($d * 0.12)), ($m + [int]($d * 0.06)), $hw, $hh)
+    $hb = New-Object System.Drawing.Drawing2D.PathGradientBrush($hl)
+    $hb.CenterColor = [System.Drawing.Color]::FromArgb(170, 255, 255, 255)
+    $hb.SurroundColors = [System.Drawing.Color[]]@([System.Drawing.Color]::FromArgb(0, 255, 255, 255))
+    $g.FillPath($hb, $hl); $hb.Dispose(); $hl.Dispose()
 
     $pgb.Dispose(); $path.Dispose(); $g.Dispose()
     return $bmp
