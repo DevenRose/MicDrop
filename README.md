@@ -54,13 +54,13 @@ copy config.example.json config.json      # then set "deviceNamePattern", e.g. "
 .\Install-MicDrop.ps1
 ```
 
-A round tray icon appears:
+A mic-grille tray icon appears — soundboard-style indicator light:
 
 | Icon | State | |
 |------|-------|---|
-| 🟢 **S** | **Stereo-locked** — mic OFF, can't be hijacked | |
-| 🔵 **M** | **Mic available** — normal | |
-| ⚫ **–** | headset not connected | |
+| 🟢 **I** | **Mic ON** — normal | |
+| 🔴 **0** | **Mic OFF** — stereo-locked, can't be hijacked | |
+| ⚫ | headset not connected | |
 
 **Double-click** = flip. **Right-click** = menu (Stereo / Mic / feedback / tip / Exit).
 

@@ -19,21 +19,8 @@ $script:askedForFeedback = $false
 
 $script:lastIcon = $null
 function New-StateIcon([string]$state) {
-    $bmp = New-Object System.Drawing.Bitmap 32, 32
-    $g = [System.Drawing.Graphics]::FromImage($bmp)
-    $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
-    switch ($state) {
-        'Stereo' { $col = [System.Drawing.Color]::LimeGreen;  $txt = 'S' }
-        'Mic'    { $col = [System.Drawing.Color]::DodgerBlue; $txt = 'M' }
-        default  { $col = [System.Drawing.Color]::DarkGray;   $txt = '-' }
-    }
-    $brush = New-Object System.Drawing.SolidBrush $col
-    $g.FillEllipse($brush, 1, 1, 30, 30)
-    $font = New-Object System.Drawing.Font('Segoe UI', 15, [System.Drawing.FontStyle]::Bold)
-    $sf = New-Object System.Drawing.StringFormat
-    $sf.Alignment = 'Center'; $sf.LineAlignment = 'Center'
-    $g.DrawString($txt, $font, [System.Drawing.Brushes]::White, (New-Object System.Drawing.RectangleF(0, 0, 32, 32)), $sf)
-    $g.Dispose(); $brush.Dispose(); $font.Dispose()
+    # SM58-style grille bitmap from the shared core
+    $bmp = New-MicDropBitmap -State $state -Size 32
     $icon = [System.Drawing.Icon]::FromHandle($bmp.GetHicon())
     $bmp.Dispose()
     return $icon
