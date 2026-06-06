@@ -1,4 +1,8 @@
-# MicDrop 🎤⤵️
+<p align="center">
+  <img src="assets/logo-banner.png" alt="MicDrop" width="680">
+</p>
+
+<h1 align="center">MicDrop</h1>
 
 **Stop your Bluetooth headset audio from dying the moment an app touches the mic.**
 

@@ -66,9 +66,9 @@ function New-MicDropBitmap {
     param([string]$State = 'Mic', [int]$Size = 32)
 
     switch ($State) {
-        'Mic'    { $light = [System.Drawing.Color]::FromArgb(190, 255, 120); $dark = [System.Drawing.Color]::FromArgb(20, 245, 55)  }
-        'Stereo' { $light = [System.Drawing.Color]::FromArgb(255, 130, 110); $dark = [System.Drawing.Color]::FromArgb(255, 20, 20)  }
-        default  { $light = [System.Drawing.Color]::FromArgb(245, 245, 245); $dark = [System.Drawing.Color]::FromArgb(160, 160, 160) }
+        'Mic'    { $light = [System.Drawing.Color]::FromArgb(225, 255, 170); $dark = [System.Drawing.Color]::FromArgb(40, 255, 70)  }
+        'Stereo' { $light = [System.Drawing.Color]::FromArgb(255, 180, 165); $dark = [System.Drawing.Color]::FromArgb(255, 35, 35)  }
+        default  { $light = [System.Drawing.Color]::FromArgb(252, 252, 252); $dark = [System.Drawing.Color]::FromArgb(175, 175, 175) }
     }
 
     $bmp = New-Object System.Drawing.Bitmap $Size, $Size
@@ -96,7 +96,7 @@ function New-MicDropBitmap {
     $off   = [single][math]::Max(1, $Size / 26)
     $wireW = [single][math]::Max(1.5, $Size / 13)
     $sheenW = [single][math]::Max(1, $Size / 30)
-    $wire  = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(105, 18, 18, 18)), $wireW
+    $wire  = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(60, 25, 25, 25)), $wireW
     $sheen = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(120, 255, 255, 255)), $sheenW
     for ($i = -$Size; $i -le ($Size * 2); $i += $step) {
         $g.DrawLine($wire,  $i, 0, ($i + $Size), $Size)
@@ -109,7 +109,7 @@ function New-MicDropBitmap {
     # edge vignette to deepen the sphere (only the outer rim darkens)
     $vig = New-Object System.Drawing.Drawing2D.PathGradientBrush($path)
     $vig.CenterColor = [System.Drawing.Color]::FromArgb(0, 0, 0, 0)
-    $vig.SurroundColors = [System.Drawing.Color[]]@([System.Drawing.Color]::FromArgb(35, 0, 0, 0))
+    $vig.SurroundColors = [System.Drawing.Color[]]@([System.Drawing.Color]::FromArgb(12, 0, 0, 0))
     $vig.CenterPoint = New-Object System.Drawing.PointF (($m + $d * 0.5), ($m + $d * 0.5))
     $vig.FocusScales = New-Object System.Drawing.PointF (0.45, 0.45)
     $g.FillPath($vig, $path); $vig.Dispose()
