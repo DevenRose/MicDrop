@@ -7,8 +7,8 @@
 Add-Type -AssemblyName System.Drawing -ErrorAction SilentlyContinue
 
 # --- project links (set these after you create the GitHub repo) ---
-$script:MicDropRepoUrl = 'https://github.com/OWNER/MicDrop'
-$script:MicDropTipUrl  = 'https://github.com/sponsors/OWNER'
+$script:MicDropRepoUrl = 'https://github.com/DevenRose/MicDrop'
+$script:MicDropTipUrl  = 'https://github.com/sponsors/DevenRose'
 
 function Resolve-MicDropPattern {
     <# Returns the headset name pattern: explicit override > config.json > '*' (all). #>

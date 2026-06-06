@@ -16,7 +16,7 @@ Once MicDrop has solved your headset problem, we want to know **what else is
 broken** in your setup. Two ways in:
 
 - The tray menu → **"Got another tech problem? Tell us"** (opens Discussions)
-- [GitHub Discussions](https://github.com/OWNER/MicDrop/discussions) directly
+- [GitHub Discussions](https://github.com/DevenRose/MicDrop/discussions) directly
 
 Common candidates we may expand into (the "room for more" path):
 

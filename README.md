@@ -112,7 +112,7 @@ input to the built-in mic).
 ## Roadmap & feedback
 
 Solved your problem? **Tell us what's broken next** — the tray's *"Got another
-tech problem?"* item and [Discussions](https://github.com/OWNER/MicDrop/discussions)
+tech problem?"* item and [Discussions](https://github.com/DevenRose/MicDrop/discussions)
 feed the [roadmap](docs/roadmap.md).
 
 ## Support
@@ -123,7 +123,3 @@ MicDrop is free and stays free. Tips optional, never required — **Sponsor** bu
 ## License
 
 [MIT](LICENSE).
-
----
-*Repo URLs and tip handles contain `OWNER` placeholders — replace them after you
-create the GitHub repo (`MicDrop.Core.ps1`, `.github/FUNDING.yml`, docs).*
