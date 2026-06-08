@@ -171,6 +171,52 @@ Describe 'FxSound re-pin' {
     }
 }
 
+Describe 'FxSound restart (wedge recovery)' {
+    It 'kills and relaunches FxSound via Explorer when running' {
+        Mock Get-Process { @([pscustomobject]@{ Name = 'FxSound'; Path = 'C:\FxSound\FxSound.exe' }) }
+        Mock Stop-Process {}
+        Mock Start-Process {}
+        Mock Test-Path { $true } -ParameterFilter { $Path -eq 'C:\FxSound\FxSound.exe' }
+        Restart-MicDropFxSound | Should -BeTrue
+        Should -Invoke Stop-Process -Times 1 -Exactly
+        Should -Invoke Start-Process -Times 1 -Exactly -ParameterFilter { $FilePath -eq 'explorer.exe' }
+    }
+    It 'starts FxSound without killing when it is not already running' {
+        Mock Get-Process { @() }
+        Mock Stop-Process {}
+        Mock Start-Process {}
+        Mock Test-Path { $true } -ParameterFilter { $Path -eq 'C:\Program Files\FxSound LLC\FxSound\FxSound.exe' }
+        Restart-MicDropFxSound | Should -BeTrue
+        Should -Invoke Stop-Process -Times 0 -Exactly
+        Should -Invoke Start-Process -Times 1 -Exactly -ParameterFilter { $FilePath -eq 'explorer.exe' }
+    }
+    It 'returns $false when the FxSound exe cannot be found' {
+        Mock Get-Process { @() }
+        Mock Stop-Process {}
+        Mock Start-Process {}
+        Mock Test-Path { $false }
+        Restart-MicDropFxSound | Should -BeFalse
+        Should -Invoke Start-Process -Times 0 -Exactly
+    }
+}
+
+Describe 'FxSound re-pin debounce gate' {
+    It 'is not due when no device-change is pending ($null)' {
+        Test-MicDropFxRepairDue -LastChange $null -Now (Get-Date) | Should -BeFalse
+    }
+    It 'is not due for the DateTime.MinValue sentinel' {
+        Test-MicDropFxRepairDue -LastChange ([datetime]::MinValue) -Now (Get-Date) | Should -BeFalse
+    }
+    It 'is not due while still inside the quiet window' {
+        $now = Get-Date
+        Test-MicDropFxRepairDue -LastChange $now.AddMilliseconds(-300) -Now $now -QuietMs 1200 | Should -BeFalse
+    }
+    It 'becomes due once the quiet window has elapsed' {
+        $now = Get-Date
+        Test-MicDropFxRepairDue -LastChange $now.AddMilliseconds(-1500) -Now $now -QuietMs 1200 | Should -BeTrue
+    }
+}
+
 Describe 'manageFxSound config resolution' {
     It 'defaults to $true when no config exists' {
         Resolve-MicDropManageFxSound -ConfigPath 'nope.json' | Should -BeTrue

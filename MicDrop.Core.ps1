@@ -154,6 +154,49 @@ function Set-MicDropFxSound {
     }
 }
 
+function Restart-MicDropFxSound {
+    <#
+      Force-restart FxSound to recover a wedged/silent render. Unlike
+      Set-MicDropFxSound, this does NOT depend on the stored output device being
+      wrong: saving/changing an EQ preset can leave FxSound's render wedged --
+      headset silent while the device, power and gain all read correct -- and a
+      re-pin no-ops because nothing in the settings is wrong. Only a restart
+      recovers it. Relaunches via Explorer so FxSound runs at the user's
+      integrity level even when called from the elevated tray.
+      Returns $true if it relaunched FxSound, else $false.
+    #>
+    param([string]$ExePath)
+    try {
+        $proc = @(Get-Process -Name FxSound -ErrorAction SilentlyContinue)
+        if (-not $ExePath) { $ExePath = ($proc | Where-Object Path | Select-Object -First 1).Path }
+        if (-not $ExePath) { $ExePath = 'C:\Program Files\FxSound LLC\FxSound\FxSound.exe' }
+        if ($proc.Count -gt 0) {
+            Stop-Process -Name FxSound -Force -ErrorAction SilentlyContinue
+            Start-Sleep -Milliseconds 600
+        }
+        if (-not (Test-Path $ExePath)) { return $false }
+        Start-Process -FilePath 'explorer.exe' -ArgumentList "`"$ExePath`""
+        return $true
+    } catch {
+        return $false
+    }
+}
+
+function Test-MicDropFxRepairDue {
+    <#
+      Debounce gate for the device-change-driven FxSound re-pin. A single physical
+      unplug fires WM_DEVICECHANGE several times, and the audio endpoints need a
+      moment to re-enumerate, so the tray records the time of the *last* change and
+      asks this whether the quiet window has elapsed. Returns $true once it's safe
+      to heal. $null / DateTime.MinValue ($LastChange) mean "no change pending".
+    #>
+    param([object]$LastChange, [datetime]$Now, [int]$QuietMs = 1200)
+    if (-not $LastChange) { return $false }
+    $lc = [datetime]$LastChange
+    if ($lc -eq [datetime]::MinValue) { return $false }
+    return (($Now - $lc).TotalMilliseconds -ge $QuietMs)
+}
+
 function New-MicDropBitmap {
     <#
       Draws a big, edge-to-edge SM58-style mic ball-grille with an embossed,
