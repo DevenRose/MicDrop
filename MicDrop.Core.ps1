@@ -53,6 +53,107 @@ function Set-MicDropMic {
     Get-MicDropHfpDevice -Pattern $Pattern | Enable-PnpDevice -Confirm:$false -ErrorAction SilentlyContinue
 }
 
+# ---------------------------------------------------------------------------
+#  FxSound (and other "router" EQ tools) integration
+#
+#  FxSound presents itself as the default playback device, processes audio, and
+#  renders to a *fixed* target endpoint it stores in its own settings. After a
+#  Bluetooth re-enumeration -- which toggling the HFP node triggers -- FxSound
+#  can silently fall back to the laptop speakers: audio keeps playing, just not
+#  in the headset. MicDrop owns the HFP node, not FxSound's routing, so it can't
+#  see this. These functions re-pin FxSound's output to the headset's A2DP
+#  stereo endpoint so a toggle (or reconnect) doesn't strand your audio.
+# ---------------------------------------------------------------------------
+
+function Resolve-MicDropManageFxSound {
+    <# Whether MicDrop should keep FxSound pinned to the headset. Default: $true. #>
+    param([string]$ConfigPath)
+    if ($ConfigPath -and (Test-Path $ConfigPath)) {
+        try {
+            $c = Get-Content $ConfigPath -Raw | ConvertFrom-Json
+            if ($null -ne $c.manageFxSound) { return [bool]$c.manageFxSound }
+        } catch {}
+    }
+    return $true
+}
+
+function ConvertTo-MicDropEndpointId {
+    <# AudioEndpoint PnP InstanceId -> the MMDevice endpoint id FxSound stores
+       (e.g. 'SWD\MMDEVAPI\{0.0.0.00000000}.{GUID}' -> '{0.0.0.00000000}.{guid}'). #>
+    param([string]$InstanceId)
+    return ($InstanceId -replace '^SWD\\MMDEVAPI\\', '').ToLowerInvariant()
+}
+
+function Get-MicDropRenderEndpoint {
+    <#
+      The headset's *stereo* (A2DP) render AudioEndpoint -- what media should play
+      through. Render endpoints are '{0.0.0.*}' (capture/mic are '{0.0.1.*}').
+      When both A2DP ("Headphones") and HFP ("Headset"/"Hands-Free") render nodes
+      exist, prefer a present/OK one and the A2DP node. Returns $null if none.
+    #>
+    param([string]$Pattern = '*')
+    $eps = @(Get-PnpDevice -Class AudioEndpoint -ErrorAction SilentlyContinue | Where-Object {
+        $_.InstanceId -like 'SWD\MMDEVAPI\{0.0.0.*' -and
+        ($Pattern -eq '*' -or $_.FriendlyName -like "*$Pattern*")
+    })
+    if ($eps.Count -eq 0) { return $null }
+    $eps | Sort-Object `
+        @{ Expression = { if ($_.Status -eq 'OK') { 0 } else { 1 } } }, `
+        @{ Expression = { if ($_.FriendlyName -match 'Hands-?Free|Headset') { 1 } else { 0 } } } |
+        Select-Object -First 1
+}
+
+function Set-MicDropFxSound {
+    <#
+      Re-pin FxSound's output device to the headset's A2DP stereo endpoint.
+      No-op (returns $false) when FxSound isn't installed, no headset render
+      endpoint is found, or it's already correct. Returns $true when it re-pins.
+
+      Must run as the real (interactive) user: it reads the user's FxSound
+      settings under %APPDATA% and relaunches FxSound via Explorer so it stays
+      at the user's integrity level even when called from the elevated tray.
+    #>
+    param(
+        [string]$Pattern = '*',
+        [string]$SettingsPath = (Join-Path $env:APPDATA 'FxSound\FxSound.settings'),
+        [string]$ExePath
+    )
+    try {
+        if (-not (Test-Path $SettingsPath)) { return $false }   # FxSound not installed
+
+        $ep = Get-MicDropRenderEndpoint -Pattern $Pattern
+        if (-not $ep) { return $false }
+        $id   = ConvertTo-MicDropEndpointId -InstanceId $ep.InstanceId
+        $name = $ep.FriendlyName
+
+        $xml = Get-Content $SettingsPath -Raw
+        $cur = if ($xml -match 'name="output_device_id" val="([^"]*)"') { $Matches[1] } else { '' }
+        if ($cur -eq $id) { return $false }                     # already on the headset
+
+        $proc = @(Get-Process -Name FxSound -ErrorAction SilentlyContinue)
+        if (-not $ExePath) { $ExePath = ($proc | Where-Object Path | Select-Object -First 1).Path }
+        if (-not $ExePath) { $ExePath = 'C:\Program Files\FxSound LLC\FxSound\FxSound.exe' }
+        $wasRunning = $proc.Count -gt 0
+        if ($wasRunning) {
+            Stop-Process -Name FxSound -Force -ErrorAction SilentlyContinue
+            Start-Sleep -Milliseconds 600
+        }
+
+        # MatchEvaluator scriptblocks avoid '$'-substitution surprises in values.
+        $xml = [regex]::Replace($xml, '(?<=name="output_device_id" val=")[^"]*',   { $id }.GetNewClosure())
+        $xml = [regex]::Replace($xml, '(?<=name="output_device_name" val=")[^"]*', { [System.Security.SecurityElement]::Escape($name) }.GetNewClosure())
+        Set-Content -Path $SettingsPath -Value $xml -Encoding UTF8 -NoNewline
+
+        # Relaunch via Explorer -> runs as the user (non-elevated), not as admin.
+        if ($wasRunning -and (Test-Path $ExePath)) {
+            Start-Process -FilePath 'explorer.exe' -ArgumentList "`"$ExePath`""
+        }
+        return $true
+    } catch {
+        return $false
+    }
+}
+
 function New-MicDropBitmap {
     <#
       Draws a big, edge-to-edge SM58-style mic ball-grille with an embossed,

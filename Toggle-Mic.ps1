@@ -19,21 +19,35 @@
 param(
     [ValidateSet('Toggle', 'Stereo', 'Mic')]
     [string]$Mode = 'Toggle',
-    [string]$DeviceNamePattern
+    [string]$DeviceNamePattern,
+    # Internal: set on the elevated child so only the user-context parent re-pins
+    # FxSound (the toggle needs admin; the FxSound fix must run as the real user).
+    [switch]$NoFxSound
 )
+
+. (Join-Path $PSScriptRoot 'MicDrop.Core.ps1')
+$configPath = Join-Path $PSScriptRoot 'config.json'
+$pattern    = Resolve-MicDropPattern -Override $DeviceNamePattern -ConfigPath $configPath
+
+function Repair-FxSound {
+    if ($NoFxSound) { return }
+    if (-not (Resolve-MicDropManageFxSound -ConfigPath $configPath)) { return }
+    if (Set-MicDropFxSound -Pattern $pattern) {
+        Write-Host "==> FxSound output re-pinned to the headset." -ForegroundColor Cyan
+    }
+}
 
 # --- self-elevate (Enable/Disable-PnpDevice needs admin) ---
 $id = [Security.Principal.WindowsIdentity]::GetCurrent()
 if (-not (New-Object Security.Principal.WindowsPrincipal($id)).IsInRole(
         [Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    $argl = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$PSCommandPath`"", '-Mode', $Mode)
+    # Elevate just the toggle and wait, then fix FxSound here as the real user.
+    $argl = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$PSCommandPath`"", '-Mode', $Mode, '-NoFxSound')
     if ($DeviceNamePattern) { $argl += @('-DeviceNamePattern', "`"$DeviceNamePattern`"") }
-    Start-Process pwsh -Verb RunAs -ArgumentList $argl
+    Start-Process pwsh -Verb RunAs -ArgumentList $argl -Wait
+    Repair-FxSound
     return
 }
-
-. (Join-Path $PSScriptRoot 'MicDrop.Core.ps1')
-$pattern = Resolve-MicDropPattern -Override $DeviceNamePattern -ConfigPath (Join-Path $PSScriptRoot 'config.json')
 
 $state = Get-MicDropState -Pattern $pattern
 if ($state -eq 'Disconnected') {
@@ -56,3 +70,7 @@ if ($wantStereo -and $state -eq 'Stereo') {
 }
 
 Get-MicDropHfpDevice -Pattern $pattern | Select-Object Status, FriendlyName | Format-Table -AutoSize
+
+# When run from an already-elevated shell there's no user-context parent, so
+# re-pin here best-effort. The child we spawn ourselves passes -NoFxSound.
+Repair-FxSound

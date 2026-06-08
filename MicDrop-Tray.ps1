@@ -14,8 +14,18 @@ Add-Type -AssemblyName System.Drawing
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
 . (Join-Path $PSScriptRoot 'MicDrop.Core.ps1')
-$script:Pattern = Resolve-MicDropPattern -ConfigPath (Join-Path $PSScriptRoot 'config.json')
+$script:ConfigPath = Join-Path $PSScriptRoot 'config.json'
+$script:Pattern = Resolve-MicDropPattern -ConfigPath $script:ConfigPath
+$script:ManageFxSound = Resolve-MicDropManageFxSound -ConfigPath $script:ConfigPath
 $script:askedForFeedback = $false
+$script:prevState = $null
+
+function Repair-MicDropFxSound {
+    # Snap FxSound's output back to the headset (no-op if FxSound isn't installed
+    # or already correct). Best-effort: never let it break the tray.
+    if (-not $script:ManageFxSound) { return }
+    try { [void](Set-MicDropFxSound -Pattern $script:Pattern) } catch {}
+}
 
 $script:lastIcon = $null
 function New-StateIcon([string]$state) {
@@ -54,11 +64,17 @@ function Update-Ui {
     $connected = $state -ne 'Disconnected'
     $miStereo.Checked = ($state -eq 'Stereo'); $miStereo.Enabled = $connected
     $miMic.Checked    = ($state -eq 'Mic');    $miMic.Enabled    = $connected
+
+    # Headset just (re)connected (or tray just started) -> FxSound may have drifted
+    # to the speakers; snap it back.
+    if ($connected -and $script:prevState -in @($null, 'Disconnected')) { Repair-MicDropFxSound }
+    $script:prevState = $state
 }
 
 function Invoke-Stereo {
     Set-MicDropStereo -Pattern $script:Pattern
     Start-Sleep -Milliseconds 800
+    Repair-MicDropFxSound
     Update-Ui
     # one-time gentle nudge at the "solved" moment
     if (-not $script:askedForFeedback) {
@@ -68,7 +84,7 @@ function Invoke-Stereo {
         $ni.ShowBalloonTip(6000)
     }
 }
-function Invoke-Mic { Set-MicDropMic -Pattern $script:Pattern; Start-Sleep -Milliseconds 800; Update-Ui }
+function Invoke-Mic { Set-MicDropMic -Pattern $script:Pattern; Start-Sleep -Milliseconds 800; Repair-MicDropFxSound; Update-Ui }
 
 $miStereo.add_Click({ Invoke-Stereo })
 $miMic.add_Click({ Invoke-Mic })

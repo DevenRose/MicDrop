@@ -7,6 +7,7 @@ by **what users actually need** — not a guess.
 
 - ✅ Stereo-lock toggle (CLI + tray) for any Bluetooth headset on Windows
 - ✅ Auto-start, always-visible tray icon
+- ✅ FxSound output auto-re-pin (keeps EQ routers from drifting to the speakers)
 - ✅ Emulated tests per headset combo
 - ✅ Beta combo-report funnel
 

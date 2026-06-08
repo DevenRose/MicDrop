@@ -1,4 +1,6 @@
 {
   "deviceNamePattern": "",
-  "_help_deviceNamePattern": "Substring of your Bluetooth headset's name to target, e.g. 'TOZO HT3' or 'WH-1000XM4'. Leave empty (\"\") to target ALL connected Bluetooth hands-free devices. Copy this file to config.json and edit."
+  "_help_deviceNamePattern": "Substring of your Bluetooth headset's name to target, e.g. 'TOZO HT3' or 'WH-1000XM4'. Leave empty (\"\") to target ALL connected Bluetooth hands-free devices. Copy this file to config.json and edit.",
+  "manageFxSound": true,
+  "_help_manageFxSound": "If you use FxSound (or it's installed), MicDrop re-pins its output to your headset after a toggle/reconnect so audio doesn't drift to the laptop speakers. Set false to leave FxSound alone."
 }

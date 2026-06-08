@@ -77,6 +77,17 @@ A mic-grille tray icon appears — soundboard-style indicator light:
 .\Toggle-Mic.ps1 -DeviceNamePattern "WH-1000XM4"
 ```
 
+## FxSound / EQ routers
+
+If you run **FxSound** (or a similar router that renders to a *fixed* target
+device), it can quietly drift to your laptop speakers after a headset reconnect
+or a MicDrop toggle — audio keeps playing, just not in your headset. MicDrop
+detects FxSound and **re-pins its output to your headset** on every toggle and
+reconnect, so it can't strand your audio there. It runs FxSound at your normal
+(non-admin) integrity and only acts when the target is actually wrong.
+
+Don't want this? Set `"manageFxSound": false` in `config.json`.
+
 ## Uninstall
 
 ```powershell
