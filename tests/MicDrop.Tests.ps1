@@ -200,23 +200,6 @@ Describe 'FxSound restart (wedge recovery)' {
     }
 }
 
-Describe 'FxSound re-pin debounce gate' {
-    It 'is not due when no device-change is pending ($null)' {
-        Test-MicDropFxRepairDue -LastChange $null -Now (Get-Date) | Should -BeFalse
-    }
-    It 'is not due for the DateTime.MinValue sentinel' {
-        Test-MicDropFxRepairDue -LastChange ([datetime]::MinValue) -Now (Get-Date) | Should -BeFalse
-    }
-    It 'is not due while still inside the quiet window' {
-        $now = Get-Date
-        Test-MicDropFxRepairDue -LastChange $now.AddMilliseconds(-300) -Now $now -QuietMs 1200 | Should -BeFalse
-    }
-    It 'becomes due once the quiet window has elapsed' {
-        $now = Get-Date
-        Test-MicDropFxRepairDue -LastChange $now.AddMilliseconds(-1500) -Now $now -QuietMs 1200 | Should -BeTrue
-    }
-}
-
 Describe 'manageFxSound config resolution' {
     It 'defaults to $true when no config exists' {
         Resolve-MicDropManageFxSound -ConfigPath 'nope.json' | Should -BeTrue

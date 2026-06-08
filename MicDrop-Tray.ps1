@@ -105,12 +105,7 @@ $miMic.add_Click({ Invoke-Mic })
 $miFixSnd.add_Click({ Invoke-FixSilentHeadset })
 $miMore.add_Click({ Start-Process "$script:MicDropRepoUrl/discussions" })
 $miTip.add_Click({ Start-Process $script:MicDropTipUrl })
-$miExit.add_Click({
-    $timer.Stop()
-    if ($script:fxTimer) { $script:fxTimer.Stop() }
-    if ($script:devWatcher) { $script:devWatcher.Dispose() }
-    $ni.Visible = $false; $ni.Dispose(); [System.Windows.Forms.Application]::Exit()
-})
+$miExit.add_Click({ $timer.Stop(); $ni.Visible = $false; $ni.Dispose(); [System.Windows.Forms.Application]::Exit() })
 $ni.add_MouseDoubleClick({
     $s = Get-MicDropState -Pattern $script:Pattern
     if ($s -eq 'Mic') { Invoke-Stereo } elseif ($s -eq 'Stereo') { Invoke-Mic }
@@ -121,49 +116,6 @@ $timer = New-Object System.Windows.Forms.Timer
 $timer.Interval = 5000
 $timer.add_Tick({ Update-Ui })
 $timer.Start()
-
-# --- FxSound drift heal on device-change ---------------------------------------
-# FxSound silently drifts its output off the headset when USB/Bluetooth devices
-# come or go (e.g. unplugging a phone) -- but the headset itself stays connected,
-# so the reconnect heal in Update-Ui never sees it. A hidden message-only window
-# receives WM_DEVICECHANGE on the UI thread; we record the time and let a debounced
-# timer re-pin once the audio endpoints settle. Only fires on real device events,
-# never on a steady-state poll, so it won't fight a deliberate speaker choice.
-$script:devWatcher = $null
-$script:fxTimer    = $null
-if ($script:ManageFxSound) {
-    try {
-        Add-Type -ReferencedAssemblies 'System.Windows.Forms' -TypeDefinition @'
-using System;
-using System.Windows.Forms;
-public class MicDropDeviceWatcher : NativeWindow, IDisposable {
-    public DateTime LastChange = DateTime.MinValue;
-    public MicDropDeviceWatcher() { CreateHandle(new CreateParams()); }
-    protected override void WndProc(ref Message m) {
-        if (m.Msg == 0x0219) { LastChange = DateTime.Now; } // WM_DEVICECHANGE
-        base.WndProc(ref m);
-    }
-    public void Dispose() { if (Handle != IntPtr.Zero) DestroyHandle(); }
-}
-'@ -ErrorAction SilentlyContinue
-
-        $script:devWatcher = New-Object MicDropDeviceWatcher
-
-        $script:fxTimer = New-Object System.Windows.Forms.Timer
-        $script:fxTimer.Interval = 1000
-        $script:fxTimer.add_Tick({
-            if (Test-MicDropFxRepairDue -LastChange $script:devWatcher.LastChange -Now (Get-Date)) {
-                $script:devWatcher.LastChange = [datetime]::MinValue
-                Repair-MicDropFxSound
-                Update-Ui
-            }
-        })
-        $script:fxTimer.Start()
-    } catch {
-        # best-effort: a watcher failure must never keep the tray from starting
-        $script:devWatcher = $null; $script:fxTimer = $null
-    }
-}
 
 Update-Ui
 [System.Windows.Forms.Application]::Run()

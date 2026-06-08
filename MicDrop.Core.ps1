@@ -182,21 +182,6 @@ function Restart-MicDropFxSound {
     }
 }
 
-function Test-MicDropFxRepairDue {
-    <#
-      Debounce gate for the device-change-driven FxSound re-pin. A single physical
-      unplug fires WM_DEVICECHANGE several times, and the audio endpoints need a
-      moment to re-enumerate, so the tray records the time of the *last* change and
-      asks this whether the quiet window has elapsed. Returns $true once it's safe
-      to heal. $null / DateTime.MinValue ($LastChange) mean "no change pending".
-    #>
-    param([object]$LastChange, [datetime]$Now, [int]$QuietMs = 1200)
-    if (-not $LastChange) { return $false }
-    $lc = [datetime]$LastChange
-    if ($lc -eq [datetime]::MinValue) { return $false }
-    return (($Now - $lc).TotalMilliseconds -ge $QuietMs)
-}
-
 function New-MicDropBitmap {
     <#
       Draws a big, edge-to-edge SM58-style mic ball-grille with an embossed,
