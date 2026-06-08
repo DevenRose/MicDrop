@@ -66,7 +66,7 @@ A mic-grille tray icon appears — soundboard-style indicator light:
 | 🔴 **0** | **Mic OFF** — stereo-locked, can't be hijacked | |
 | ⚫ | headset not connected | |
 
-**Double-click** = flip. **Right-click** = menu (Stereo / Mic / feedback / tip / Exit).
+**Double-click** = flip. **Right-click** = menu (Stereo / Mic / **Fix silent headset** / feedback / tip / Exit).
 
 ## Use without the tray (CLI)
 
@@ -87,6 +87,12 @@ reconnect, so it can't strand your audio there. It runs FxSound at your normal
 (non-admin) integrity and only acts when the target is actually wrong.
 
 Don't want this? Set `"manageFxSound": false` in `config.json`.
+
+Sometimes FxSound's audio **wedges** — usually right after you save an EQ preset —
+and the headset goes silent while FxSound still shows the right device, power and
+gain. A re-pin can't fix that (nothing in the settings is actually wrong); only a
+restart does. Right-click the tray icon → **Fix silent headset** to restart FxSound
+in one click and get your audio back.
 
 ## Uninstall
 
