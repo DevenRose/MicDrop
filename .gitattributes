@@ -1,0 +1,17 @@
+# Normalise text to LF in the repository, regardless of the OS that wrote it.
+# Without this, edits made on Windows silently rewrite whole files as CRLF and every diff looks like
+# a total rewrite, which hides the real change, makes review impossible, and lets one person's work
+# be reverted without anyone seeing it. That is PL-042 in PAB-Memory:problem-log.md.
+* text=auto eol=lf
+
+# Binary / generated — never touch
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.xlsx binary
+*.zip binary
+*.woff binary
+*.woff2 binary
