@@ -91,7 +91,7 @@ def snapshot(desktop,pid):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('action',choices=['inspect','close'])
+    parser.add_argument('action',choices=['inspect','close','close-micdrop-test'])
     parser.add_argument('--pid',type=int,required=True)
     parser.add_argument('--desktop',required=True)
     args = parser.parse_args()
@@ -99,14 +99,21 @@ def main():
     if not desktop:
         raise c.WinError(c.get_last_error())
     try:
-        hwnd,result = snapshot(desktop,args.pid)
+        if args.action == 'close-micdrop-test':
+            if not args.desktop.startswith('MicDropSetup-'):
+                raise RuntimeError('Only an agent-created separate desktop is allowed for this test close')
+            matches=[h for h in windows(desktop,args.pid) if title(h)=='MicDrop Equalizer · TOZO HT3']
+            if len(matches)!=1:raise RuntimeError('Expected one MicDrop test window')
+            hwnd=matches[0];result={'pid':args.pid,'endpoint':'MicDrop WM_APP+17 test close'}
+        else:
+            hwnd,result = snapshot(desktop,args.pid)
         result['desktop'] = args.desktop
-        if args.action == 'close':
+        if args.action in ('close','close-micdrop-test'):
             process = k.OpenProcess(0x100000,False,args.pid)  # synchronization only
             if not process:
                 raise c.WinError(c.get_last_error())
             try:
-                result['close_result'] = message(hwnd,0x8000,1)
+                result['close_result'] = message(hwnd,0x8011) if args.action == 'close-micdrop-test' else message(hwnd,0x8000,1)
                 result['process_exited'] = k.WaitForSingleObject(process,10000) == 0
                 if not result['process_exited']:
                     raise RuntimeError('Peace did not exit; no forced termination attempted')

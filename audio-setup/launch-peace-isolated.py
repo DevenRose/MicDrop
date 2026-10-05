@@ -75,9 +75,18 @@ try:
         'C:\\Program Files\\EqualizerAPO\\config\\Peace.exe']
     if not proof and '--keep-current' not in sys.argv:
         args.extend(['TOZO Media','hide'])
+    working_dir = 'C:\\Program Files\\EqualizerAPO\\config'
+    spec = None
+    if '--launch-spec' in sys.argv:
+        spec_path = Path(sys.argv[sys.argv.index('--launch-spec')+1]).resolve()
+        if folder.resolve() not in spec_path.parents:
+            raise RuntimeError('Test launch specifications must be inside the task staging folder')
+        spec = json.loads(spec_path.read_text())
+        args = spec['args']
+        working_dir = spec['working_dir']
     command = c.create_unicode_buffer(subprocess.list2cmdline(args))
     if not k.CreateProcessW(args[0],command,None,None,False,0x08000000,None,
-                            'C:\\Program Files\\EqualizerAPO\\config',c.byref(si),c.byref(process)):
+                            working_dir,c.byref(si),c.byref(process)):
         raise c.WinError(c.get_last_error())
     if proof:
         if k.WaitForSingleObject(process.hProcess,10000) != 0:
@@ -91,6 +100,9 @@ try:
         exit_code = w.DWORD()
         if not k.GetExitCodeProcess(process.hProcess,c.byref(exit_code)):
             raise c.WinError(c.get_last_error())
+        if spec and spec.get('wait_ms'):
+            k.WaitForSingleObject(process.hProcess,spec['wait_ms'])
+            k.GetExitCodeProcess(process.hProcess,c.byref(exit_code))
     after = input_name()
     if after != before:
         raise RuntimeError('Input desktop changed unexpectedly; do not continue.')

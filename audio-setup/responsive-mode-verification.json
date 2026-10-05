@@ -1,0 +1,12 @@
+{
+  "normal_before": true,
+  "call_during_tozo_capture": true,
+  "normal_restored_after_capture": true,
+  "call_band_count": 26,
+  "call_highest_standard_center": 6300.0,
+  "normal_band_count": 31,
+  "normal_highest_standard_center": 20000.0,
+  "capture_sample_rate": 16000.0,
+  "discarded_capture_frames": 7840,
+  "passed": true
+}

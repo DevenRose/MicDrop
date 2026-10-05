@@ -1,0 +1,12 @@
+narrow: width=360 height=550 finalBandY=2821.6 clippedText=0
+wide: width=1250 height=820 finalBandY=379.68 clippedText=0
+large-text: width=650 height=820 finalBandY=3779.35 clippedText=0
+maximized: width=1294.66666666667 height=766.666666666667 finalBandY=379.68 clippedText=0
+standard31NormalBands=31
+actual16kCallBands=26
+separateModeRanges=True
+verifiedRenderRate=48000
+verifiedCaptureRate=16000
+audioVerified=True
+audioError=
+passed=True

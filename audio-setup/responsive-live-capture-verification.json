@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "recorded_audio": false,
+  "baseline_rms": 0.00024669306259727034,
+  "attenuated_rms": 0.0,
+  "restored_rms": 0.00021375163288590537,
+  "configuration_restored": true
+}
