@@ -61,4 +61,4 @@ Why asked: Constitution 4.11 says “Do not use popups for anything, ever.” Co
 
 How Captain can deliver the permission: Reply in this chat with “Allow setup windows and audio restart.” If Windows later presents its administrator permission screen, verify it is for the installation just described, then choose Yes. No command or password needs to be pasted here. The agent must record the answer before acting and determine whether the available machine tools can operate the permitted installation windows; permission alone does not prove that ability.
 
-Answer: Pending. No installation or live audio change performed.
+Answer received 2026-10-05: “both permitted”. Captain approved the setup windows and audio restart in response to the request above. Installation and live audio changes had not begun when this answer was recorded.
