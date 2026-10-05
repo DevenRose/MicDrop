@@ -1,0 +1,23 @@
+Device: TOZO HT3 Hands-Free Headset {7c806a74-2036-47d5-b3fe-1a0aa19bb13e}
+Device: {7c806a74-2036-47d5-b3fe-1a0aa19bb13e}
+Channel: all
+Preamp: -3 dB
+Filter 1: ON HPQ Fc 80 Hz Q 0.7071
+Filter 2: ON PK Fc 250 Hz Gain -2 dB Q 1
+Filter 3: ON PK Fc 2500 Hz Gain 2 dB Q 0.7
+
+Device: TOZO HT3 Hands-Free Headset
+Device: {50c13f97-8076-409c-8c5d-b95c6a3deedd}
+Channel: all
+Preamp: -3 dB
+Filter 1: ON PK Fc 60 Hz Gain 2 dB Q 0.7
+Filter 2: ON PK Fc 250 Hz Gain -1 dB Q 1
+Filter 3: ON PK Fc 2000 Hz Gain 1 dB Q 0.7
+
+Device: TOZO HT3 Headphones {b56632b2-8e96-4c11-a623-8e233b195adb}
+Device: {b56632b2-8e96-4c11-a623-8e233b195adb}
+Channel: all
+Preamp: -3 dB
+Filter 1: ON PK Fc 60 Hz Gain 2 dB Q 0.7
+Filter 2: ON PK Fc 250 Hz Gain -1 dB Q 1
+Filter 3: ON PK Fc 2000 Hz Gain 1 dB Q 0.7

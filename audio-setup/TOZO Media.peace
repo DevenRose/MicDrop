@@ -1,0 +1,23 @@
+[General]
+Description=Conservative starting media setting; not a measured TOZO correction.
+Device=TOZO HT3 Headphones
+Device GUID={b56632b2-8e96-4c11-a623-8e233b195adb}
+PreAmp=-3
+
+[Frequencies]
+Frequency1=60
+Frequency2=250
+Frequency3=2000
+
+[Gains]
+Gain1=2
+Gain2=-1
+Gain3=1
+
+[Qualities]
+Quality1=0.7
+Quality2=1
+Quality3=0.7
+
+[Commands]
+2=Device: {b56632b2-8e96-4c11-a623-8e233b195adb}

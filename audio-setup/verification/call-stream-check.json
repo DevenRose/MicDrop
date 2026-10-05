@@ -1,0 +1,10 @@
+{
+  "input_frames": 32000,
+  "output_frames": 96480,
+  "callback_flags": [],
+  "input_device": "Headset (TOZO HT3)",
+  "output_device": "Headphones (TOZO HT3)",
+  "input_rate": 16000.0,
+  "output_rate": 48000.0,
+  "status": "passed"
+}

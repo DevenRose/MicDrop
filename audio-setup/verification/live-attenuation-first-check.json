@@ -1,0 +1,9 @@
+{
+  "status": "inconclusive",
+  "recorded_audio": false,
+  "baseline_rms": 7.360908147097069,
+  "attenuated_rms": 0.47886584760243656,
+  "restored_rms": 76.49327952506678,
+  "reason": "No decisive attenuation, or insufficient ambient signal.",
+  "configuration_restored": true
+}

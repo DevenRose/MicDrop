@@ -1,0 +1,9 @@
+{
+  "status": "inconclusive",
+  "recorded_audio": false,
+  "baseline_rms": 18.515736550296886,
+  "attenuated_rms": 0.4790289657212808,
+  "restored_rms": 236.63076082527817,
+  "reason": "No exact digital silence, or insufficient ambient signal.",
+  "configuration_restored": true
+}
