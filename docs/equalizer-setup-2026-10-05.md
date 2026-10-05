@@ -79,7 +79,7 @@ Equalizer APO 1.4.2 and Peace 1.6.9.11 are installed in `C:\Program Files\Equali
 
 TOZO microphone mode is enabled. The disabled Bluetooth Audio Gateway service was restored to Manual/Running, making headset capture usable. Windows audio was restarted once under the recorded authorization; no computer reboot was performed. Normal playback already selected TOZO; the communications playback default was corrected from ASM-156UC to TOZO. Communications microphone already selected TOZO and was preserved. The ordinary microphone default remains the laptop microphone.
 
-Three native Peace presets use exact Windows device identifiers, including a second exact selector after Peace's friendly-name selector. This fixes Peace's inactive Bluetooth-device fallback, which otherwise allowed playback filters to match the microphone name. Voice and call-audio presets are always active alongside the selected media preset.
+Three native Peace presets use exact Windows device identifiers, including a second exact selector after Peace's friendly-name selector. This fixes Peace's inactive Bluetooth-device fallback, which otherwise allowed playback filters to match the microphone name. All three presets are Always active. Peace's native same-configuration exclusion prevents applying the selected preset twice, so selecting Voice for adjustment keeps Media active too. Deliberate user launch shows the expanded interface.
 
 | Preset | Processing |
 |---|---|
@@ -99,6 +99,7 @@ The initial installer had registered ten unrelated endpoints. Their five effect-
 - A vendor diagnostic listener returned no receipts. A subsequent administrator launch was canceled, was not repeated, and its unused helper was removed. The live microphone test above used no elevation or audio restart.
 - Playback routing, simultaneous operation, registrations and the actual filter file are verified. An acoustic playback response measurement and an actual call in Captain's chosen application have not been performed. Applications using raw or exclusive audio can bypass system effects; their behavior is not established by these tests.
 - A subsequent bounded live playback-gain checker selected the TOZO loopback while keeping its microphone open. It detected existing playback (RMS 0.248636) and skipped its test signal and temporary EQ change. This protected Captain's current audio. The skip is inconclusive for live playback gain and is retained as such; no audio recording was saved.
+- After Captain directed continued functional work, the described active-playback comparison passed: a quiet -40 dBFS synthetic tone with the microphone open measured -5.928 dB for a temporary -6 dB output EQ change, then returned within +0.195 dB of baseline. The microphone processed 191,840 frames. Original configuration bytes were restored exactly. Only aggregate measurements were retained; no microphone or playback audio recording was saved. This proves live Windows playback processing during microphone use, while acoustic response and actual call-app behavior remain for Captain's listening check.
 
 Detailed discovery and retained results: `audio-setup/HISTORY.md` and `audio-setup/verification/`.
 
@@ -107,7 +108,16 @@ Detailed discovery and retained results: `audio-setup/HISTORY.md` and `audio-set
 1. Keep MicDrop in Mic mode. Stereo mode disables the TOZO microphone.
 2. In a call application's audio settings choose Headset (TOZO HT3) for microphone and Headphones (TOZO HT3) for speaker. Applications honoring Windows communications defaults already receive those choices. Applications honoring the ordinary microphone default may still use the laptop microphone unless explicitly selected.
 3. Leave Windows audio enhancements enabled for the TOZO devices. Avoid exclusive/raw microphone mode when the application's settings offer that choice. Call applications' own voice processing can change the result.
-4. Open Peace Equalizer from Start when adjusting the presets. Keep the exact-device commands in each preset and the voice/call presets in Always active. The EQ continues when Peace is closed.
+4. Click Start, type Peace Equalizer, and open the matching installed shortcut. In Peace's configuration list select TOZO Media to adjust what you hear, or TOZO Voice to adjust your microphone. All three presets stay active while selecting either. Keep the exact-device commands and Always active entries. Make small slider changes and use Save to retain them. Leave the preamp at -3 dB initially. The EQ continues when Peace is closed.
+
+## Captain's listening check — required before completion
+
+The work is not finished until Captain has used the setup and confirmed it is acceptable. The earlier bookkeeping request must not block functional verification, and passing automated tests does not substitute for Captain's acceptance.
+
+1. Leave MicDrop in Mic mode and open Peace as described above. Its configuration list contains TOZO Media, TOZO Voice and TOZO Call Audio. The Voice sliders show 80 Hz high-pass, -2 dB at 250 Hz and +2 dB at 2.5 kHz; Media shows +2 dB at 60 Hz, -1 dB at 250 Hz and +1 dB at 2 kHz.
+2. To hear your microphone without making an external call, click Start → Settings → System → Sound. Under Input choose Headset (TOZO HT3) and open its properties. Under the microphone test click Start test, speak a sentence, click Stop test, then Play to hear your sample. This is a recording Captain deliberately starts himself; the agent has not saved any voice audio. Microsoft documents this built-in flow at https://support.microsoft.com/en-us/windows/hardware/drivers/how-to-set-up-and-test-microphones-in-windows.
+3. For the actual call check, choose Headset (TOZO HT3) as microphone and Headphones (TOZO HT3) as speaker in the call application's audio settings. Speak while some PC media plays quietly. Check that your voice is clear, both directions remain audible, and there is no crackle or dropout. Bluetooth media becomes mono and loses bandwidth while the headset microphone is open; EQ cannot remove that limitation.
+4. Tell the agent whether the voice and media are acceptable. If either is wrong, name the call application and describe the sound (too quiet, boomy, thin, harsh, distorted, silent, or dropping out). Continue tuning or fixing the actual problem before claiming completion.
 
 ## Recovery
 

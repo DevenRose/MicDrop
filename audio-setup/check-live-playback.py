@@ -12,7 +12,11 @@ import sounddevice as sd
 
 config = Path('C:/Program Files/EqualizerAPO/config/config.txt')
 original = config.read_bytes()
-result = {'status': 'inconclusive', 'recorded_audio': False, 'tone_dbfs': -100}
+active_playback = '--with-active-playback' in sys.argv
+tone_dbfs = -40 if active_playback else -100
+tone_amplitude = 10 ** (tone_dbfs / 20)
+result = {'status': 'inconclusive', 'recorded_audio': False,
+          'tone_dbfs': tone_dbfs, 'active_playback_option': active_playback}
 lock = threading.Lock()
 stats = {'n': 0, 'sum': 0j, 'energy': 0.0, 'mic_frames': 0}
 phase = {'render': 0, 'loopback': 0}
@@ -26,7 +30,7 @@ def microphone(_data, frames, _time, _status):
 def render(_data, frames, _time, _status):
     t = (np.arange(frames) + phase['render']) / rate
     phase['render'] += frames
-    signal = np.sin(2 * np.pi * freq * t) * (1e-5 if tone_on else 0)
+    signal = np.sin(2 * np.pi * freq * t) * (tone_amplitude if tone_on else 0)
     stereo = np.repeat(signal[:, None], 2, axis=1).astype(np.float32)
     return stereo.tobytes(), pa.paContinue
 
@@ -78,7 +82,7 @@ try:
                                   input_device_index=capture['index'], stream_callback=loopback):
                     time.sleep(1)
                     result['existing_playback'] = measure()
-                    if result['existing_playback']['rms'] > 1e-4:
+                    if result['existing_playback']['rms'] > 1e-4 and not active_playback:
                         raise RuntimeError('Existing playback detected; no EQ change made.')
                     tone_on = True
                     time.sleep(1)

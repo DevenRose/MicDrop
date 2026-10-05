@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "recorded_audio": false,
+  "tone_dbfs": -40,
+  "active_playback_option": true,
+  "output": "Headphones (TOZO HT3)",
+  "loopback": "Headphones (TOZO HT3) [Loopback]",
+  "existing_playback": {
+    "tone_amplitude": 0.0007910817388098615,
+    "rms": 0.15940772252759292,
+    "frames": 95520
+  },
+  "baseline": {
+    "tone_amplitude": 0.007804679417979415,
+    "rms": 0.16327557480276092,
+    "frames": 95520
+  },
+  "attenuated": {
+    "tone_amplitude": 0.003944144153256005,
+    "rms": 0.0780633842162331,
+    "frames": 96000
+  },
+  "restored": {
+    "tone_amplitude": 0.007982229260261847,
+    "rms": 0.1675856015212967,
+    "frames": 96000
+  },
+  "microphone_frames": 191840,
+  "attenuation_db": -5.928045788050644,
+  "restoration_db": 0.19538256584623367,
+  "configuration_restored": true
+}
