@@ -1,0 +1,41 @@
+{
+  "Date": "2026-10-05",
+  "File": "C:\\Program Files\\EqualizerAPO\\config\\peace.ini",
+  "Changes": [
+    {
+      "Key": "Font Size",
+      "Before": "8.5",
+      "After": "12"
+    },
+    {
+      "Key": "Slider X Space",
+      "Before": "2",
+      "After": "4"
+    },
+    {
+      "Key": "Slider Thumb Width",
+      "Before": "22",
+      "After": "32"
+    },
+    {
+      "Key": "Device List Width",
+      "Before": "185",
+      "After": "260"
+    },
+    {
+      "Key": "Configurations Width",
+      "Before": "200",
+      "After": "280"
+    },
+    {
+      "Key": "Configurations Height",
+      "Before": "165",
+      "After": "220"
+    },
+    {
+      "Key": "dB Slider Height",
+      "Before": "300",
+      "After": "350"
+    }
+  ]
+}
