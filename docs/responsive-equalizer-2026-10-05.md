@@ -37,6 +37,23 @@ Captain reported a high-pitched whine during this verification. The playback tes
 
 Open Start and search MicDrop Equalizer. Drag the window borders or maximize using the title bar. Editing chooses Normal playback, Call playback or My microphone; Bands chooses 10, 15 or 31; Text size applies immediately. Adjust a slider or enter its gain and press Enter. Changes save automatically. Closing the window keeps the app in the tray, where it can switch between normal and call curves while Captain uses the TOZO microphone. Double-click its tray microphone icon to reopen it; it also appears on the taskbar while open. Keep this interface running in the tray for automatic call-mode switching.
 
+### Find the controls
+
+1. Press the Windows key, type **MicDrop Equalizer**, and select the matching app. The window title is **MicDrop Equalizer · TOZO HT3**; the heading inside is **TOZO HT3 Equalizer**. No automatic launch was added.
+2. Immediately below that heading, **Editing** is the first dropdown, **Bands** is next, and **Text size** follows. **Flat bands** and **To tray** are buttons after those dropdowns. On a narrow window they wrap onto another line. The text below reports the active output mode and selected profile's frequency range.
+3. Choose **Normal playback** to adjust media when the headset microphone is not in use; choose **Call playback** for what you hear while it is in use; choose **My microphone** for your transmitted voice. Choosing a profile edits it; it does not force a Bluetooth mode or disable the other profiles.
+4. Choose **31 · third octave** for the default full set, or **10 · octave** / **15 · two-thirds octave** for fewer controls. Each frequency has a vertical slider and a numeric gain box underneath. Drag the slider or type a gain in that box and press Enter. Gains are decibels; changes save automatically.
+5. For larger text choose **Text size**, then **16 pt**, **18 pt** or **24 pt**. Use the square maximize button between the minimize dash and close X at the upper right, or drag any window border. Controls wrap as width changes; scroll downward for remaining bands in a small window.
+6. The tray icon is a cyan microphone on a dark square beside the Windows clock. If Windows hides it, click the small up-arrow beside the clock. Double-click that microphone to restore the window. Right-click it for Show/Hide/Exit. Close X and **To tray** hide the window while retaining automatic call detection. **Exit** stops detection and restores the normal playback curve; APO processing remains installed.
+
+### Personal listening check
+
+1. With the TOZO headset connected and no application using its microphone, play familiar music at your usual comfortable volume. The status should say **Active output: normal playback · full range**. Check that the whine is gone and playback sounds acceptable. Opening this app generates no sound.
+2. Check resize, maximize and your preferred text size now; confirm frequency labels and gain boxes remain readable. The standard curve starts flat, so adjust it to taste if needed; it is not a measured headphone correction.
+3. Start your usual call or its own microphone test. Its microphone must be **Headset (TOZO HT3)** and its speaker **Headphones (TOZO HT3)**. Windows communications defaults already select those devices, but an application using the ordinary input default may choose the laptop mic. The equalizer status should change to **Active output: call playback · TOZO microphone is in use**. Speak and check your voice plus PC media output. End the call/mic test; status should return to normal playback.
+4. The original MicDrop tray tool's **Stereo** lock disables the headset microphone. If you previously selected that lock, right-click its separate tray icon and choose **Mic** before calling. Enabling the microphone does not itself select this equalizer's call curve; an active microphone session does.
+5. Report whether the whine is gone, whether the window/text controls work, and whether media and your voice are acceptable. If a call app chooses the wrong mic or speaker, provide its name so its exact menus can be inspected before giving UI instructions. No acceptance is inferred from silence or passing automated tests.
+
 ## Recovery
 
 Exit MicDrop Equalizer through its tray menu before recovery. Restore the backed-up config.txt and Peace shortcut, then deliberately launch original Peace.exe. The original .peace presets and theme have never been removed. Do not run both frontends together because each manages its own active equalizer configuration.

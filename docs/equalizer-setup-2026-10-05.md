@@ -1,5 +1,7 @@
 # TOZO HT3 equalizer setup — 2026-10-05
 
+**Current interface:** the later requested resize/maximize rewrite is installed as **MicDrop Equalizer**. Use [the current instructions](responsive-equalizer-2026-10-05.md#usage) for adjustment and listening checks. Peace instructions below document the earlier installation and recovery state; Peace is no longer the active frontend.
+
 ## Captain's request
 
 “Work in the micdrop repo. Read about my bluetooth headset and my system and settings---consult PE if needed. Download and install Equalizer APO and Peace Equalizer and configure apprpriately. Confirm before installation that it works with bluetooth and that i can use it in mic mode for calls to eq my voice and the pc media output.”
