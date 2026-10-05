@@ -72,7 +72,9 @@ try:
     si.wShowWindow = 0
     proof = '--proof' in sys.argv
     args = [sys.executable,str(Path(__file__).resolve()),'--probe-child'] if proof else [
-        'C:\\Program Files\\EqualizerAPO\\config\\Peace.exe','TOZO Media','hide']
+        'C:\\Program Files\\EqualizerAPO\\config\\Peace.exe']
+    if not proof and '--keep-current' not in sys.argv:
+        args.extend(['TOZO Media','hide'])
     command = c.create_unicode_buffer(subprocess.list2cmdline(args))
     if not k.CreateProcessW(args[0],command,None,None,False,0x08000000,None,
                             'C:\\Program Files\\EqualizerAPO\\config',c.byref(si),c.byref(process)):
