@@ -1,0 +1,14 @@
+{
+  "status": "inconclusive",
+  "recorded_audio": false,
+  "tone_dbfs": -100,
+  "output": "Headphones (TOZO HT3)",
+  "loopback": "Headphones (TOZO HT3) [Loopback]",
+  "existing_playback": {
+    "tone_amplitude": 0.0003074880960416423,
+    "rms": 0.24863625569094006,
+    "frames": 96480
+  },
+  "error": "Existing playback detected; no EQ change made.",
+  "configuration_restored": true
+}

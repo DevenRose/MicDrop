@@ -98,6 +98,7 @@ The initial installer had registered ten unrelated endpoints. Their five effect-
 - Live microphone processing passed an exact-silence configuration test using floating point sample delivery: baseline RMS 0.00006138, test RMS exactly 0, restored RMS 0.00013226. The exact original configuration bytes were restored in `finally`. Only aggregate levels were saved; no microphone audio was saved. Earlier integer-sample tests were inconclusive and are retained as such.
 - A vendor diagnostic listener returned no receipts. A subsequent administrator launch was canceled, was not repeated, and its unused helper was removed. The live microphone test above used no elevation or audio restart.
 - Playback routing, simultaneous operation, registrations and the actual filter file are verified. An acoustic playback response measurement and an actual call in Captain's chosen application have not been performed. Applications using raw or exclusive audio can bypass system effects; their behavior is not established by these tests.
+- A subsequent bounded live playback-gain checker selected the TOZO loopback while keeping its microphone open. It detected existing playback (RMS 0.248636) and skipped its test signal and temporary EQ change. This protected Captain's current audio. The skip is inconclusive for live playback gain and is retained as such; no audio recording was saved.
 
 Detailed discovery and retained results: `audio-setup/HISTORY.md` and `audio-setup/verification/`.
 
